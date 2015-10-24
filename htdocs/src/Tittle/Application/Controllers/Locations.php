@@ -8,6 +8,7 @@ use Silex\Application;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
 use Tittle\DatabaseModels\Category as CategoryModel;
 use Tittle\DatabaseModels\Location as LocationModel;
@@ -15,6 +16,30 @@ use Tittle\Environment;
 
 class Locations
 {
+    public function add(Request $request, Application $app)
+    {
+        $title = $request->get('title');
+        $category_name = $request->get('category');
+        $latitude = $request->get('latitude');
+        $longitude = $request->get('longitude');
+        $description = $request->get('description');
+
+        if (!isset($title, $category_name, $latitude, $longitude, $description)) {
+            throw new MissingMandatoryParametersException;
+        }
+
+        $location = new LocationModel;
+
+        $location->title = $title;
+        $location->category_id = CategoryModel::idByName();
+        $location->latitude = $latitude;
+        $location->longitude = $longitude;
+        $location->description = $description;
+        $location->save();
+
+        return new Response('ok');
+    }
+
     public function get(Request $request, Application $app)
     {
         $location_builder = LocationModel
@@ -53,6 +78,35 @@ class Locations
         }, $locations);
 
         return $app->json($stripped_locations);
+    }
+
+    public function update(Request $request, Application $app, $id)
+    {
+        $location = LocationModel::find($id);
+
+        if (isset($request->get('title'))) {
+            $location->title = $request->get('title');
+        }
+
+        if (isset($request->get('category_name'))) {
+            $location->category_id = CategoryModel::idByName($request->get('category_name'));
+        }
+
+        if (isset($request->get('latitude'))) {
+            $location->latitude = $request->get('latitude');
+        }
+
+        if (isset($request->get('longitude'))) {
+            $location->longitude = $request->get('longitude');
+        }
+
+        if (isset($request->get('description'))) {
+            $location->description = $request->get('description');
+        }
+
+        $location->save();
+
+        return new Response('ok');
     }
 
     public function fetchRecent($offset)

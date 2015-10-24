@@ -23,4 +23,9 @@ class Category extends \Illuminate\Database\Eloquent\Model
         // Couldn't match anything in the about foreach
         return null;
     }
+
+    public static function idByName($name)
+    {
+        return self::where('name', $name)->first();
+    }
 }
