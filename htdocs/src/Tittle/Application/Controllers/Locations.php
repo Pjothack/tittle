@@ -14,11 +14,11 @@ use Tittle\Environment;
 
 class Locations
 {
-    public function index(Request $request, Application $app)
+    public function getAll(Request $request, Application $app)
     {
-        $this->fetchRecent();
+        $locations = LocationModel::all();
 
-        return new Response('ok');
+        return $app->json($locations);
     }
 
     private function fetchRecent()
