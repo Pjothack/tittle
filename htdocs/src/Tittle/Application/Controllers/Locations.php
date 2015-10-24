@@ -17,7 +17,10 @@ class Locations
 {
     public function get(Request $request, Application $app)
     {
-        $location_builder = LocationModel::leftJoin('categories', 'locations.category_id', '=', 'categories.id');
+        $location_builder = LocationModel
+            ::leftJoin('categories', 'locations.category_id', '=', 'categories.id')
+            ->whereNotNull('category_id')
+            ->orderBy('updated_at');
 
         if ($request->get('category')) {
             $location_builder = $location_builder->where('categories.name', $request->get('category'));
