@@ -9,6 +9,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
+use Tittle\DatabaseModels\Category as CategoryModel;
 use Tittle\DatabaseModels\Location as LocationModel;
 use Tittle\Environment;
 
@@ -21,13 +22,14 @@ class Locations
         return $app->json($locations);
     }
 
-    private function fetchRecent()
+    public function fetchRecent($offset)
     {
         $client = new Client(['base_uri' => Environment::VISIT_TAMPERE_API_URL]);
         $res = $client->request('GET', 'search', [
             'query' => [
                 'type' => 'location',
-                'limit' => 50,
+                'limit' => 100,
+                'offset' => $offset,
             ],
         ]);
 
@@ -47,6 +49,13 @@ class Locations
             $possible_model = LocationModel::where('title', '=', $loc['title'])->first();
 
             $model = $possible_model ?: new LocationModel;
+
+            $category = CategoryModel::byTags($loc['tags']);
+            if ($category) {
+                $model->category_id = $category->id;
+            } else {
+                error_log('could not match tag to location: '. print_r($loc['tags'], true));
+            }
 
             if ($model->latitude == 0 || $model->longitude == 0) {
                 $geocoder->setAddress($loc['contact_info']['address']);
