@@ -27,7 +27,7 @@ class Locations
         $res = $client->request('GET', 'search', [
             'query' => [
                 'type' => 'location',
-                'limit' => 100,
+                'limit' => 50,
             ],
         ]);
 
@@ -37,10 +37,43 @@ class Locations
             return isset($loc['contact_info'], $loc['contact_info']['address']);
         });
 
-        array_walk($locations_with_addresses, function ($loc) {
+/*
+        $adapter = new \Ivory\HttpAdapter\CurlHttpAdapter;
+        $geocoder = new \Geocoder\Provider\GoogleMaps(
+            $adapter,
+            null,
+            null,
+            true,
+            $api_key
+        );
+        */
+        $api_key = 'AIzaSyC-nc1mdbGfyH3HoUsuyqz2K068g08dpVU';
+
+        $geocoder = new \GoogleMapsGeocoder();
+        $geocoder->setApikey($api_key);
+        $geocoder->setBounds(61.370922, 23.409324, 61.564102, 24.109702);
+
+        array_walk($locations_with_addresses, function ($loc) use ($geocoder) {
             $possible_model = LocationModel::where('title', '=', $loc['title'])->first();
 
             $model = $possible_model ?: new LocationModel;
+
+            if ($model->latitude == 0 || $model->longitude == 0) {
+                $geocoder->setAddress($loc['contact_info']['address']);
+                $response = $geocoder->geocode();
+
+                if (isset($response['results'])) {
+                    $location = $response['results'][0]['geometry']['location'];
+                } else {
+                    $location = [
+                        'lat' => null,
+                        'lng' => null,
+                    ];
+                }
+
+                $model->latitude = $location['lat'];
+                $model->longitude = $location['lng'];
+            }
 
             $model->title = $loc['title'];
             $model->description = $loc['description'];
