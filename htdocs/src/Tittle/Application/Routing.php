@@ -26,7 +26,13 @@ class Routing implements ControllerProviderInterface
             return new Response('PONG');
         });
 
-        $controllers->get('status', 'Tittle\\Application\\Controllers\\Status::status');
+        $wrap = function ($class) {
+            return 'Tittle\\Application\\Controllers\\' . $class;
+        };
+
+        $controllers->get('status', $wrap('Status::index'));
+
+        $controllers->get('events', $wrap('Events::index'));
 
         return $controllers;
     }
