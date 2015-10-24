@@ -37,17 +37,7 @@ class Locations
             return isset($loc['contact_info'], $loc['contact_info']['address']);
         });
 
-/*
-        $adapter = new \Ivory\HttpAdapter\CurlHttpAdapter;
-        $geocoder = new \Geocoder\Provider\GoogleMaps(
-            $adapter,
-            null,
-            null,
-            true,
-            $api_key
-        );
-        */
-        $api_key = 'AIzaSyC-nc1mdbGfyH3HoUsuyqz2K068g08dpVU';
+        $api_key = $_ENV['GEOCODER_API_KEY'];
 
         $geocoder = new \GoogleMapsGeocoder();
         $geocoder->setApikey($api_key);

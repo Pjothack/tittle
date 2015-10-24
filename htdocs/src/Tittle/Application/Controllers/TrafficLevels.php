@@ -12,9 +12,9 @@ use Tittle\Environment;
 
 class TrafficLevels
 {
-    public function get(Request $request, Application $app)
+    public function getByLocation(Request $request, Application $app, $id)
     {
-        $traffic_levels = TrafficLevelModel::all();
+        $traffic_levels = TrafficLevelModel::where('location_id', $id)->get();
 
         return $app->json($traffic_levels);
     }

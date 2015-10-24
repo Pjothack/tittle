@@ -33,8 +33,7 @@ class Routing implements ControllerProviderInterface
         $controllers->get('status', $wrap('Status::index'));
 
         $controllers->get('locations', $wrap('Locations::getAll'));
-
-        $controllers->get('traffic_levels', $wrap('TrafficLevels::get'));
+        $controllers->get('locations/{id}/traffic_levels', $wrap('TrafficLevels::getByLocation'))->assert('id', '\d+');
 
         return $controllers;
     }
