@@ -1,0 +1,4 @@
+composer.lock
+sqlbuddy/
+htdocs/vendor/
+manifest.yml
