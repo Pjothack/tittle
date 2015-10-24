@@ -9,6 +9,8 @@ use Illuminate\Database\Capsule\Manager as DB;
  */
 abstract class Environment
 {
+    const VISIT_TAMPERE_API_URL = 'http://visittampere.fi/api/';
+
     protected static $eloquent_initialized = false;
 
     /**
