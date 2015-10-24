@@ -32,7 +32,7 @@ class Routing implements ControllerProviderInterface
 
         $controllers->get('status', $wrap('Status::index'));
 
-        $controllers->get('events', $wrap('Events::index'));
+        $controllers->get('locations', $wrap('Locations::index'));
 
         return $controllers;
     }
