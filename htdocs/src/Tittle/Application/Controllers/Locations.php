@@ -15,11 +15,41 @@ use Tittle\Environment;
 
 class Locations
 {
-    public function getAll(Request $request, Application $app)
+    public function get(Request $request, Application $app)
     {
-        $locations = LocationModel::all();
+        $location_builder = LocationModel::leftJoin('categories', 'locations.category_id', '=', 'categories.id');
 
-        return $app->json($locations);
+        if ($request->get('category')) {
+            $location_builder = $location_builder->where('categories.name', $request->get('category'));
+        }
+
+        if ($request->get('with_description')) {
+            $location_builder = $location_builder->where('categories.name', $request->get('category'));
+        }
+
+        if ($request->get('limit')) {
+            $location_builder = $location_builder->limit($request->get('limit'));
+        }
+
+        $locations = $location_builder->get()->toArray();
+
+        $stripped_locations = array_map(function ($loc) use ($request) {
+            $returnable = [
+                'id' => $loc['id'],
+                'title' => $loc['title'],
+                'latitude' => $loc['latitude'],
+                'longitude' => $loc['longitude'],
+                'category' => $loc['name'],
+            ];
+
+            if ($request->get('with_description')) {
+                $returnable['description'] = $loc['description'];
+            }
+
+            return $returnable;
+        }, $locations);
+
+        return $app->json($stripped_locations);
     }
 
     public function fetchRecent($offset)
