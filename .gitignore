@@ -2,3 +2,5 @@ composer.lock
 sqlbuddy
 htdocs/vendor/
 manifest.yml
+*.swp
+*.swo
