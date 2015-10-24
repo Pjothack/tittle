@@ -25,8 +25,16 @@ class TrafficLevels
 
     public function getByLocation(Request $request, Application $app, $id)
     {
-        $traffic_levels = TrafficLevelModel::where('location_id', $id)->get();
+        $traffic_levels_builder = TrafficLevelModel
+            ::where('location_id', $id)
+            ->limit(60);
 
-        return $app->json($traffic_levels);
+        $average = $traffic_levels_builder->avg('level');
+        $count = $traffic_levels_builder->count('level');
+
+        return $app->json([
+            'average' => $average,
+            'count' => $count,
+        ]);
     }
 }
