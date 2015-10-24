@@ -16,6 +16,11 @@ use Tittle\Environment;
 
 class Locations
 {
+    const AREA_BOUND_SW_LATITUDE = 61.370922;
+    const AREA_BOUND_SW_LONGITUDE = 23.409324;
+    const AREA_BOUND_NE_LATITUDE = 61.564102;
+    const AREA_BOUND_NE_LONGITUDE = 24.109702;
+
     public function add(Request $request, Application $app)
     {
         $title = $request->get('title');
@@ -130,7 +135,12 @@ class Locations
 
         $geocoder = new \GoogleMapsGeocoder();
         $geocoder->setApikey($api_key);
-        $geocoder->setBounds(61.370922, 23.409324, 61.564102, 24.109702);
+        $geocoder->setBounds(
+            self::AREA_BOUND_SW_LATITUDE,
+            self::AREA_BOUND_SW_LONGITUDE,
+            self::AREA_BOUND_NE_LATITUDE,
+            self::AREA_BOUND_NE_LONGITUDE
+        );
 
         array_walk($locations_with_addresses, function ($loc) use ($geocoder) {
             $possible_model = LocationModel::where('title', '=', $loc['title'])->first();
