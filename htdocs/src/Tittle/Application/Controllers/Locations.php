@@ -36,7 +36,7 @@ class Locations
         $location = new LocationModel;
 
         $location->title = $title;
-        $location->category_id = CategoryModel::idByName();
+        $location->category_id = CategoryModel::idByName($category_name);
         $location->latitude = $latitude;
         $location->longitude = $longitude;
         $location->description = $description;
@@ -89,24 +89,29 @@ class Locations
     {
         $location = LocationModel::find($id);
 
-        if (isset($request->get('title'))) {
-            $location->title = $request->get('title');
+        $title = $request->get('title');
+        if (isset($title)) {
+            $location->title = $title;
         }
 
-        if (isset($request->get('category_name'))) {
-            $location->category_id = CategoryModel::idByName($request->get('category_name'));
+        $category_name = $request->get('category_name');
+        if (isset($category_game)) {
+            $location->category_id = CategoryModel::idByName($category_name);
         }
 
-        if (isset($request->get('latitude'))) {
-            $location->latitude = $request->get('latitude');
+        $latitude = $request->get('latitude');
+        if (isset($latitude)) {
+            $location->latitude = $latitude;
         }
 
-        if (isset($request->get('longitude'))) {
-            $location->longitude = $request->get('longitude');
+        $longitude = $request->get('longitude');
+        if (isset($longitude)) {
+            $location->longitude = $longitude;
         }
 
-        if (isset($request->get('description'))) {
-            $location->description = $request->get('description');
+        $description = $request->get('description');
+        if (isset($description)) {
+            $location->description = $description;
         }
 
         $location->save();

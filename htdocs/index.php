@@ -31,6 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && count($_POST) == 0) {
     $_POST = (array) @json_decode(file_get_contents("php://input"), true);
 }
 
+Request::enableHttpMethodParameterOverride();
+
 $app = new Application();
 $app->mount('/', new \Tittle\Application\Routing());
 

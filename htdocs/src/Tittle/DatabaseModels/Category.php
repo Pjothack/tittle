@@ -26,6 +26,6 @@ class Category extends \Illuminate\Database\Eloquent\Model
 
     public static function idByName($name)
     {
-        return self::where('name', $name)->first();
+        return self::where('name', $name)->first()->id;
     }
 }
