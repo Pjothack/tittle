@@ -64,7 +64,7 @@ class Locations
             $location_builder = $location_builder->limit($request->get('limit'));
         }
 
-        $locations = $location_builder->with('discounts')->get([
+        $locations = $location_builder->with('category')->with('discounts')->with('trafficLevels')->get([
             'locations.id',
             'locations.title',
             'locations.latitude',
@@ -76,13 +76,25 @@ class Locations
         $stripped_locations = [];
 
         foreach ($locations as $loc) {
+            $bare_traffic_levels = array_map(function ($data) {
+                return $data['level'];
+            }, $loc->trafficLevels->toArray());
+
+            $average_traffic = count($bare_traffic_levels) > 0
+                ? array_sum($bare_traffic_levels) / count($bare_traffic_levels)
+                : -1;
+
             $returnable = [
                 'id' => $loc->id,
                 'title' => $loc->title,
                 'latitude' => $loc->latitude,
                 'longitude' => $loc->longitude,
-                'category' => $loc->name,
+                'category' => $loc->category->name,
                 'discounts' => $loc->discounts,
+                'traffic' => [
+                    'average' => $average_traffic,
+                    'count' => count($bare_traffic_levels),
+                ],
             ];
 
             if ($request->get('with_description')) {
