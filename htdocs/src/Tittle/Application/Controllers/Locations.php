@@ -64,23 +64,33 @@ class Locations
             $location_builder = $location_builder->limit($request->get('limit'));
         }
 
-        $locations = $location_builder->get()->toArray();
+        $locations = $location_builder->with('discounts')->get([
+            'locations.id',
+            'locations.title',
+            'locations.latitude',
+            'locations.longitude',
+            'locations.title',
+            'locations.description',
+        ]);
 
-        $stripped_locations = array_map(function ($loc) use ($request) {
+        $stripped_locations = [];
+
+        foreach ($locations as $loc) {
             $returnable = [
-                'id' => $loc['id'],
-                'title' => $loc['title'],
-                'latitude' => $loc['latitude'],
-                'longitude' => $loc['longitude'],
-                'category' => $loc['name'],
+                'id' => $loc->id,
+                'title' => $loc->title,
+                'latitude' => $loc->latitude,
+                'longitude' => $loc->longitude,
+                'category' => $loc->name,
+                'discounts' => $loc->discounts,
             ];
 
             if ($request->get('with_description')) {
-                $returnable['description'] = $loc['description'];
+                $returnable['description'] = $loc->description;
             }
 
-            return $returnable;
-        }, $locations);
+            $stripped_locations[] = $returnable;
+        }
 
         return $app->json($stripped_locations);
     }
