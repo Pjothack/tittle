@@ -30,8 +30,6 @@ class Routing implements ControllerProviderInterface
             return 'Tittle\\Application\\Controllers\\' . $class;
         };
 
-        $controllers->get('status', $wrap('Status::index'));
-
         $controllers->get('locations', $wrap('Locations::get'));
         $controllers->post('locations', $wrap('Locations::add'));
         $controllers->put('locations/{id}', $wrap('Locations::update'))->assert('id', '\d+');
